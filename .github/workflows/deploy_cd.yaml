@@ -1,24 +1,29 @@
-name: Deploy
+name: Deploy to EC2
 
 on:
   push:
-    branches:
-      - main
+    branches: ["main"]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-      - name: SSH and Deploy
+      - name: Setup SSH Key
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
-          echo "$SSH_PRIVATE_KEY" > keyfile
-          chmod 600 keyfile
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/ec2_key
+          chmod 600 ~/.ssh/ec2_key
 
-          ssh -o StrictHostKeyChecking=no -i keyfile ubuntu@3.24.240.85 \
-            "cd /home/ubuntu && bash deploy.sh"
+      - name: Add EC2 Server to known_hosts (Security Recommended)
+        run: |
+          ssh-keyscan -H 3.24.240.85 >> ~/.ssh/known_hosts
+
+      - name: Run Deployment Script on EC2
+        run: |
+          ssh -i ~/.ssh/ec2_key ubuntu@3.24.240.85 "cd /home/ubuntu && bash deploy.sh"
