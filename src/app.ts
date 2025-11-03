@@ -11,7 +11,7 @@ app.get("/", (req: Request, res: Response) => {
 
 app.use("/api/v1/user", userRouter)
 
-app.get("/health", (req:Request, res:Request) => {
+app.get("/health", (req:Request, res:Response) => {
   const now = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
   res.status(200).json({
     message: `server is up ${now}`
