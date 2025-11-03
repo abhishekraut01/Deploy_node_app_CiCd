@@ -5,10 +5,13 @@ app.use(express.json());
 
 import userRouter from './routes/user.routes.js'
 
+app.get("/", (req: Request, res: Response) => {
+  res.send("landing page")
+})
 
 app.use("/api/v1/user", userRouter)
 
-app.get("/health", (req, res) => {
+app.get("/health", (req:Request, res:Request) => {
   const now = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
   res.status(200).json({
     message: `server is up ${now}`
@@ -17,8 +20,8 @@ app.get("/health", (req, res) => {
 
 // Error handling middleware
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-    console.error(err.stack);
-    res.status(500).send('Internal Server Error');
+  console.error(err.stack);
+  res.status(500).send('Internal Server Error');
 });
 
 
